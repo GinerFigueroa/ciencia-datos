@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciencia de Datos en Inglés — Pandas, NumPy y Pipelines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1B2A4A;
+    --navy-deep:#101a30;
+    --paper:#F3EEE1;
+    --paper-dim:#e7e0cd;
+    --gold:#C9A227;
+    --stamp:#B33A3A;
+    --ink:#20263a;
+    --ok:#4C7A5B;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--navy-deep);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(201,162,39,0.08), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(201,162,39,0.06), transparent 40%);
+    font-family:'JetBrains Mono', monospace;
+    color:var(--paper);
+    padding:0 0 60px 0;
+  }
+  .cover{
+    max-width:900px;
+    margin:0 auto;
+    padding:48px 24px 32px;
+    text-align:center;
+    border-bottom:2px solid var(--gold);
+  }
+  .cover .eyebrow{
+    letter-spacing:.35em;
+    font-size:11px;
+    color:var(--gold);
+    text-transform:uppercase;
+  }
+  .cover h1{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:clamp(32px,6vw,54px);
+    margin:10px 0 6px;
+    color:var(--paper);
+  }
+  .cover p{
+    color:#cfd6e8;
+    font-size:14px;
+    max-width:620px;
+    margin:0 auto;
+    line-height:1.6;
+  }
+  .passport-strip{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    margin-top:22px;
+    flex-wrap:wrap;
+  }
+  .stamp{
+    border:2px dashed var(--gold);
+    border-radius:50%;
+    width:56px;height:56px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:13px;
+    color:var(--gold);
+    opacity:.55;
+    transform:rotate(-6deg);
+    transition:opacity .3s, transform .3s;
+  }
+  .stamp.active{
+    opacity:1;
+    border-style:solid;
+    color:var(--stamp);
+    border-color:var(--stamp);
+    transform:rotate(-6deg) scale(1.05);
+  }
+  .wrap{max-width:900px;margin:36px auto 0;padding:0 24px;}
+  .ticket{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:10px;
+    margin-bottom:18px;
+    overflow:hidden;
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
+    border:1px solid var(--paper-dim);
+  }
+  .ticket-head{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:none;
+    border:none;
+    padding:18px 20px;
+    cursor:pointer;
+    text-align:left;
+    font-family:inherit;
+  }
+  .ticket-head:hover{background:rgba(27,42,74,.04);}
+  .gate{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:22px;
+    color:var(--navy);
+    min-width:64px;
+    border-right:2px dashed var(--paper-dim);
+    padding-right:14px;
+  }
+  .gate small{display:block;font-family:'JetBrains Mono',monospace;font-weight:400;font-size:10px;letter-spacing:.15em;color:var(--stamp);text-transform:uppercase;}
+  .head-text h2{
+    margin:0;
+    font-family:'Fraunces',serif;
+    font-size:19px;
+    font-weight:600;
+    color:var(--navy);
+  }
+  .head-text span{
+    font-size:12px;
+    color:#6b7280;
+  }
+  .chevron{
+    margin-left:auto;
+    font-size:18px;
+    color:var(--gold);
+    transition:transform .25s ease;
+  }
+  .ticket.open .chevron{transform:rotate(180deg);}
+  .ticket-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .45s ease;
+    border-top:2px dashed var(--paper-dim);
+  }
+  .ticket.open .ticket-body{max-height:9999px;}
+  .ticket-inner{padding:6px 22px 22px 22px;}
+  .ticket-inner ul{margin:10px 0;padding-left:20px;line-height:1.65;font-size:14px;}
+  .ticket-inner p{line-height:1.65;font-size:14px;}
+  .goal{
+    display:inline-block;
+    margin-top:6px;
+    font-size:11px;
+    letter-spacing:.05em;
+    background:var(--navy);
+    color:var(--paper);
+    padding:3px 9px;
+    border-radius:20px;
+  }
+  .phrase-box{
+    background:#fff;
+    border:1px solid var(--paper-dim);
+    border-radius:8px;
+    padding:10px 12px;
+    margin:8px 0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .phrase-text{font-size:14px; flex:1;}
+  .phrase-text b{color:var(--navy);}
+  .phrase-text i{display:block;color:#6b7280;font-size:12px;font-style:normal;margin-top:2px;}
+  .speak-btn{
+    flex:0 0 auto;
+    background:var(--navy);
+    color:var(--paper);
+    border:none;
+    border-radius:50%;
+    width:34px;height:34px;
+    cursor:pointer;
+    font-size:15px;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .speak-btn:hover{background:var(--stamp);}
+  .speak-btn:active{transform:scale(.9);}
+  .speak-btn.playing{background:var(--ok);}
+  .traduccion{
+    background: #f0f4f8;
+    border-left: 4px solid var(--gold);
+    padding: 10px 14px;
+    margin-top: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #333;
+  }
+  .traduccion b{color:var(--navy);}
+  .code-block{
+    background:#0f172a;
+    color:#e2e8f0;
+    padding:12px 14px;
+    border-radius:8px;
+    font-size:12.5px;
+    line-height:1.6;
+    overflow-x:auto;
+    margin:10px 0;
+    border-left:4px solid var(--gold);
+    font-family:'JetBrains Mono', monospace;
+    white-space:pre;
+  }
+  .code-block .kw{color:#c792ea;}
+  .code-block .fn{color:#82aaff;}
+  .code-block .st{color:#c3e88d;}
+  .code-block .cm{color:#6b7a99;}
+  .footer-note{
+    max-width:900px;margin:30px auto 0;padding:0 24px;
+    font-size:12px;color:#9aa3bb;text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="eyebrow">Boarding pass · Data Science · Pandas &amp; NumPy</div>
+  <h1>Ciencia de Datos en Inglés</h1>
+  <p>Aprende inglés técnico aplicado a Pandas, NumPy y pipelines de datos. Toca cada tarjeta para abrir el paso, pulsa 🔊 para escuchar la pronunciación y lee la traducción al final de cada hoja.</p>
+  <div class="passport-strip">
+    <div class="stamp active" data-level="A1">A1</div>
+    <div class="stamp" data-level="A2">A2</div>
+    <div class="stamp" data-level="B1">B1</div>
+    <div class="stamp" data-level="B2">B2</div>
+    <div class="stamp" data-level="C1">C1</div>
+    <div class="stamp" data-level="C2">C2</div>
+  </div>
+</div>
+
+<div class="wrap" id="tickets"></div>
+
+<p class="footer-note">🔊 Pulsa el botón de bocina para escuchar la pronunciación en inglés. La traducción está al final de cada paso.</p>
+
+<script>
+// ==================== DATA: PASOS DE CIENCIA DE DATOS ====================
+const steps = [
+  {
+    gate:"01", tag:"Step 1", title:"Data Science Process (OSEMN)",
+    body:`
+    <p><b>English paragraph:</b></p>
+    <div class="phrase-box">
+      <div class="phrase-text">
+        <b>The data science process</b> has five steps: Obtain, Scrub, Explore, Model, and Interpret. In real projects, eighty percent of the time is spent on Obtain and Scrub. This means that cleaning data is the most important part of the job.
+      </div>
+      <button class="speak-btn" onclick="speak(this, 'The data science process has five steps: Obtain, Scrub, Explore, Model, and Interpret. In real projects, eighty percent of the time is spent on Obtain and Scrub. This means that cleaning data is the most important part of the job.')">🔊</button>
+    </div>
+    <div class="traduccion">
+      <b>Traducción:</b> El proceso de ciencia de datos tiene cinco pasos: Obtener, Limpiar, Explorar, Modelar e Interpretar. En proyectos reales, el ochenta por ciento del tiempo se dedica a Obtener y Limpiar. Esto significa que limpiar los datos es la parte más importante del trabajo.
+    </div>
+    <span class="goal">Meta: entender el proceso OSEMN en inglés</span>`
+  },
+  {
+    gate:"02", tag:"Step 2", title:"Structured vs Unstructured Data",
+    body:`
+    <p><b>English paragraph:</b></p>
+    <div class="phrase-box">
+      <div class="phrase-text">
+        <b>Structured data</b> is tabular and standardized, like Excel, CSV, or RDB data. <b>Unstructured data</b> includes text, audio, image, video, and sensor logs. <b>Semi-structured data</b> includes XML, JSON, and HTML. Pandas works best with structured data.
+      </div>
+      <button class="speak-btn" onclick="speak(this, 'Structured data is tabular and standardized, like Excel, CSV, or RDB data. Unstructured data includes text, audio, image, video, and sensor logs. Semi-structured data includes XML, JSON, and HTML. Pandas works best with structured data.')">🔊</button>
+    </div>
+    <div class="traduccion">
+      <b>Traducción:</b> Los datos estructurados son tabulares y estandarizados, como Excel, CSV o datos RDB. Los datos no estructurados incluyen texto, audio, imagen, video y logs de sensores. Los datos semi-estructurados incluyen XML, JSON y HTML. Pandas funciona mejor con datos estructurados.
+    </div>
+    <span class="goal">Meta: diferenciar tipos de datos en inglés</span>`
+  },
+  {
+    gate:"03", tag:"Step 3", title:"Pandas: Series and DataFrame",
+    body:`
+    <p><b>English paragraph:</b></p>
+    <div class="phrase-box">
+      <div class="phrase-text">
+        <b>Pandas</b> is a library that handles data as a numeric table. The two main structures are <b>Series</b> (one dimension) and <b>DataFrame</b> (two dimensions). A DataFrame is a NumPy 2D array with row and column labels. Row labels are called <b>index</b>, and column labels are called <b>columns</b>.
+      </div>
+      <button class="speak-btn" onclick="speak(this, 'Pandas is a library that handles data as a numeric table. The two main structures are Series, one dimension, and DataFrame, two dimensions. A DataFrame is a NumPy 2D array with row and column labels. Row labels are called index, and column labels are called columns.')">🔊</button>
+    </div>
+    <div class="traduccion">
+      <b>Traducción:</b> Pandas es una librería que maneja datos como una tabla numérica. Las dos estructuras principales son Series (una dimensión) y DataFrame (dos dimensiones). Un DataFrame es un array 2D de NumPy con etiquetas de fila y columna. Las etiquetas de fila se llaman index, y las de columna se llaman columns.
+    </div>
+    <span class="goal">Meta: describir Series y DataFrame en inglés</span>`
+  },
+  {
+    gate:"04", tag:"Step 4", title:"Data Extraction: loc, iloc, at, iat",
+    body:`
+    <p><b>English paragraph:</b></p>
+    <div class="phrase-box">
+      <div class="phrase-text">
+        In Pandas, we use <b>loc</b> to select by label, <b>iloc</b> to select by index, <b>at</b> to get a single element by label, and <b>iat</b> to get a single element by index. For example, <b>df.loc[1:2, ['ID', 'Birth_year']]</b> selects rows by label, and <b>df.iloc[0:2, [0, 2]]</b> selects rows by position.
+      </div>
+      <button class="speak-btn" onclick="speak(this, 'In Pandas, we use loc to select by label, iloc to select by index, at to get a single element by label, and iat to get a single element by index. For example, df dot loc one to two, ID and Birth year, selects rows by label, and df dot iloc zero to two, zero and two, selects rows by position.')">🔊</button>
+    </div>
+    <div class="traduccion">
+      <b>Traducción:</b> En Pandas, usamos loc para seleccionar por etiqueta, iloc para seleccionar por índice, at para obtener un único elemento por etiqueta, e iat para obtener un único elemento por índice. Por ejemplo, df.loc[1:2, ['ID', 'Birth_year']] selecciona filas por etiqueta, y df.iloc[0:2, [0, 2]] selecciona filas por posición.
+    </div>
+    <span class="goal">Meta: extraer datos con loc, iloc, at, iat</span>`
+  },
+  {
+    gate:"05", tag:"Step 5", title:"Merging Data: Inner, Left, Outer",
+    body:`
+    <p><b>English paragraph:</b></p>
+    <div class="phrase-box">
+      <div class="phrase-text">
+        <b>An inner join</b> keeps only rows where the key exists in both DataFrames. <b>A left outer join</b> keeps all rows from the left DataFrame. <b>A full outer join</b> keeps all rows from both DataFrames. We can also use <b>pd.concat</b> for a vertical join and a horizontal join based on index.
+      </div>
+      <button class="speak-btn" onclick="speak(this, 'An inner join keeps only rows where the key exists in both DataFrames. A left outer join keeps all rows from the left DataFrame. A full outer join keeps all rows from both DataFrames. We can also use pd dot concat for a vertical join and a horizontal join based on index.')">🔊</button>
+    </div>
+    <div class="traduccion">
+      <b>Traducción:</b> Una unión interna conserva solo las filas donde la clave existe en ambos DataFrames. Una unión por la izquierda conserva todas las filas del DataFrame izquierdo. Una unión externa completa conserva todas las filas de ambos DataFrames. También podemos usar pd.concat para una unión vertical y una unión horizontal basada en el índice.
+    </div>
+    <span class="goal">Meta: unir tablas con merge y concat</span>`
+  },
+  {
+    gate:"06", tag:"Step 6", title:"Binning with cut and qcut",
+    body:`
+    <p><b>English paragraph:</b></p>
+    <div class="phrase-box">
+      <div class="phrase-text">
+        <b>Binning</b> divides data into intervals. <b>cut()</b> splits data at equal intervals, and <b>qcut()</b> splits data at the same number of items. For example, <b>pd.cut(data['value'], bins=5)</b> creates five equal-width bins, and <b>pd.qcut(data['value'], q=5)</b> creates five equal-frequency bins.
+      </div>
+      <button class="speak-btn" onclick="speak(this, 'Binning divides data into intervals. cut splits data at equal intervals, and qcut splits data at the same number of items. For example, pd dot cut data value, bins equals five, creates five equal-width bins, and pd dot qcut data value, q equals five, creates five equal-frequency bins.')">🔊</button>
+    </div>
+    <div class="traduccion">
+      <b>Traducción:</b> El binning divide los datos en intervalos. cut() divide los datos en intervalos iguales, y qcut() divide los datos en el mismo número de elementos. Por ejemplo, pd.cut(data['value'], bins=5) crea cinco intervalos de igual ancho, y pd.qcut(data['value'], q=5) crea cinco intervalos de igual frecuencia.
+    </div>
+    <span class="goal">Meta: agrupar datos con cut y qcut</span>`
+  },
+  {
+    gate:"07", tag:"Step 7", title:"Hierarchical Indexing",
+    body:`
+    <p><b>English paragraph:</b></p>
+    <div class="phrase-box">
+      <div class="phrase-text">
+        <b>Hierarchical indexing</b> uses multiple levels of indexes to improve interpretability and make aggregation easier. For example, level 0 can be the store name and level 1 can be the city. This does not change the data itself, but it makes filtering and aggregation much faster.
+      </div>
+      <button class="speak-btn" onclick="speak(this, 'Hierarchical indexing uses multiple levels of indexes to improve interpretability and make aggregation easier. For example, level zero can be the store name and level one can be the city. This does not change the data itself, but it makes filtering and aggregation much faster.')">🔊</button>
+    </div>
+    <div class="traduccion">
+      <b>Traducción:</b> La indexación jerárquica usa múltiples niveles de índices para mejorar la interpretabilidad y facilitar la agregación. Por ejemplo, el nivel 0 puede ser el nombre de la tienda y el nivel 1 puede ser la ciudad. Esto no cambia los datos en sí, pero hace que el filtrado y la agregación sean mucho más rápidos.
+    </div>
+    <span class="goal">Meta: entender la indexación jerárquica</span>`
+  },
+  {
+    gate:"08", tag:"Step 8", title:"From SQL to NumPy to Prediction",
+    body:`
+    <p><b>English paragraph:</b></p>
+    <div class="phrase-box">
+      <div class="phrase-text">
+        In a real project, we extract data from <b>MySQL</b> (for example, from XAMPP or Hostinger) into a <b>Pandas DataFrame</b>. Then we convert the DataFrame to a <b>NumPy array</b> and use a model like <b>scikit-learn</b> to make predictions. NumPy does not predict by itself; it is the bridge between Pandas and the machine learning model.
+      </div>
+      <button class="speak-btn" onclick="speak(this, 'In a real project, we extract data from MySQL, for example, from XAMPP or Hostinger, into a Pandas DataFrame. Then we convert the DataFrame to a NumPy array and use a model like scikit-learn to make predictions. NumPy does not predict by itself; it is the bridge between Pandas and the machine learning model.')">🔊</button>
+    </div>
+    <div class="traduccion">
+      <b>Traducción:</b> En un proyecto real, extraemos datos de MySQL (por ejemplo, desde XAMPP o Hostinger) hacia un DataFrame de Pandas. Luego convertimos el DataFrame a un array de NumPy y usamos un modelo como scikit-learn para hacer predicciones. NumPy no predice por sí solo; es el puente entre Pandas y el modelo de machine learning.
+    </div>
+    <span class="goal">Meta: entender el flujo SQL → Pandas → NumPy → predicción</span>`
+  },
+  {
+    gate:"09", tag:"Step 9", title:"What is a Data Pipeline?",
+    body:`
+    <p><b>English paragraph:</b></p>
+    <div class="phrase-box">
+      <div class="phrase-text">
+        A <b>data pipeline</b> is a sequence of automated steps that transform data from a raw state to a useful state. For example: extract from MySQL, clean with Pandas, convert to NumPy, train a model, and save the predictions. A pipeline is reusable, maintainable, and reproducible.
+      </div>
+      <button class="speak-btn" onclick="speak(this, 'A data pipeline is a sequence of automated steps that transform data from a raw state to a useful state. For example: extract from MySQL, clean with Pandas, convert to NumPy, train a model, and save the predictions. A pipeline is reusable, maintainable, and reproducible.')">🔊</button>
+    </div>
+    <div class="traduccion">
+      <b>Traducción:</b> Un pipeline de datos es una secuencia de pasos automatizados que transforman los datos desde un estado crudo hasta un estado útil. Por ejemplo: extraer de MySQL, limpiar con Pandas, convertir a NumPy, entrenar un modelo y guardar las predicciones. Un pipeline es reutilizable, mantenible y reproducible.
+    </div>
+    <span class="goal">Meta: definir qué es un pipeline de datos en inglés</span>`
+  },
+  {
+    gate:"10", tag:"Step 10", title:"Real Example: SQL to Prediction",
+    body:`
+    <p><b>English paragraph:</b></p>
+    <div class="phrase-box">
+      <div class="phrase-text">
+        In a real case, we connect Python to a MySQL database in the cloud, read the data with <b>pd.read_sql</b>, convert the columns to a NumPy array with <b>.to_numpy()</b>, and train a model with <b>scikit-learn</b>. This is a standard pipeline used by data teams every day.
+      </div>
+      <button class="speak-btn" onclick="speak(this, 'In a real case, we connect Python to a MySQL database in the cloud, read the data with pd dot read underscore sql, convert the columns to a NumPy array with dot to underscore numpy, and train a model with scikit-learn. This is a standard pipeline used by data teams every day.')">🔊</button>
+    </div>
+    <div class="code-block"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> sqlalchemy <span class="kw">import</span> create_engine
+<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LogisticRegression
+
+engine = create_engine(<span class="st">"mysql+pymysql://user:pass@host/db"</span>)
+df = pd.read_sql(<span class="st">"SELECT * FROM clientes"</span>, con=engine)
+
+X = df[[<span class="st">'edad'</span>, <span class="st">'ingresos'</span>]].to_numpy()
+y = df[<span class="st">'abandono'</span>].to_numpy()
+
+modelo = LogisticRegression()
+modelo.fit(X, y)
+prediccion = modelo.predict(X)</div>
+    <div class="traduccion">
+      <b>Traducción:</b> En un caso real, conectamos Python a una base de datos MySQL en la nube, leemos los datos con pd.read_sql, convertimos las columnas a un array de NumPy con .to_numpy(), y entrenamos un modelo con scikit-learn. Este es un pipeline estándar que usan los equipos de datos todos los días.
+    </div>
+    <span class="goal">Meta: leer y entender un pipeline real en inglés</span>`
+  }
+];
+
+// ==================== RENDERIZADO ====================
+const container = document.getElementById('tickets');
+
+steps.forEach((step) => {
+  const ticket = document.createElement('div');
+  ticket.className = 'ticket';
+  ticket.innerHTML = `
+    <button class="ticket-head" onclick="toggleTicket(this)">
+      <div class="gate">${step.gate}<small>${step.tag}</small></div>
+      <div class="head-text">
+        <h2>${step.title}</h2>
+        <span>${step.tag}</span>
+      </div>
+      <span class="chevron">▼</span>
+    </button>
+    <div class="ticket-body">
+      <div class="ticket-inner">
+        ${step.body}
+      </div>
+    </div>
+  `;
+  container.appendChild(ticket);
+});
+
+// ==================== FUNCIONES ====================
+function toggleTicket(btn) {
+  const ticket = btn.closest('.ticket');
+  ticket.classList.toggle('open');
+}
+
+function speak(btn, text) {
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+
+  document.querySelectorAll('.speak-btn').forEach(b => b.classList.remove('playing'));
+  btn.classList.add('playing');
+
+  utterance.onend = () => btn.classList.remove('playing');
+  utterance.onerror = () => btn.classList.remove('playing');
+
+  window.speechSynthesis.speak(utterance);
+}
+
+// ==================== SELLOS DE NIVEL ====================
+document.querySelectorAll('.stamp').forEach(stamp => {
+  stamp.addEventListener('click', () => {
+    document.querySelectorAll('.stamp').forEach(s => s.classList.remove('active'));
+    stamp.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
